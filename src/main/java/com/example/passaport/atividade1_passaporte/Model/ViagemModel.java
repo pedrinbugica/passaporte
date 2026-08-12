@@ -1,27 +1,24 @@
 package com.example.passaport.atividade1_passaporte.Model;
+
 import jakarta.persistence.*;
 import lombok.Data;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Data
-@Entity(name = "tb_passaporte")
-public class PassaporteModel {
-
+@Entity(name = "tb_viagens")
+public class ViagemModel {
     @Id
     @GeneratedValue(generator = "UUID")
     private UUID id;
 
-    @Column(unique = true)
-    private String numero;
+    private String destino;
 
-    private LocalDate dataEmissao;
-    private LocalDate dataValidade;
+    private LocalDate dataSaida;
+    private LocalDate dataRetorno;
 
-    private String paisEmissor;
-
-    @OneToOne(mappedBy = "passaporte")
+    @ManyToOne
+    @JoinColumn(name = "pessoa_id")
     private PessoaModel pessoa;
 }
-
-    
