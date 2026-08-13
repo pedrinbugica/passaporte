@@ -1,0 +1,80 @@
+### Variáveis
+@host = http://localhost:8080
+
+### 1. Criar Pessoa
+POST {{host}}/pessoas
+Content-Type: application/json
+
+{
+  "nome": "Maria Silva",
+  "cpf": "12345678900",
+  "dataNascimento": "1995-04-20",
+  "email": "maria@email.com"
+}
+
+### 2. Criar Passaporte
+POST {{host}}/passaportes
+Content-Type: application/json
+
+{
+  "numero": "BR123456",
+  "paisEmissor": "Brasil",
+  "dataEmissao": "2023-01-10",
+  "dataValidade": "2033-01-10"
+}
+
+### 3. Listar todas as Pessoas
+GET {{host}}/pessoas
+
+### 4. Listar todos os Passaportes
+GET {{host}}/passaportes
+
+### 5. Buscar Pessoa por CPF
+GET {{host}}/pessoas/cpf/12345678900
+
+### 6. Buscar Passaporte por numero
+GET {{host}}/passaportes/numero/BR123456
+
+### 7. Atualizar Pessoa (troque o {id} pelo id retornado na criação)
+PUT {{host}}/pessoas/{id}
+Content-Type: application/json
+
+{
+  "email": "novoemail@email.com"
+}
+
+### 8. Atualizar Passaporte (troque o {id} pelo id retornado na criação)
+PUT {{host}}/passaportes/{id}
+Content-Type: application/json
+
+{
+  "paisEmissor": "Portugal"
+}
+
+### 9. Deletar Pessoa (troque o {id})
+DELETE {{host}}/pessoas/{id}
+
+### 10. Deletar Passaporte (troque o {id})
+DELETE {{host}}/passaportes/{id}
+
+### 11. Teste de regra de negocio: CPF duplicado (deve dar erro)
+POST {{host}}/pessoas
+Content-Type: application/json
+
+{
+  "nome": "Outra Pessoa",
+  "cpf": "12345678900",
+  "dataNascimento": "1990-01-01",
+  "email": "outra@email.com"
+}
+
+### 12. Teste de regra de negocio: data de validade antes da emissao (deve dar erro)
+POST {{host}}/passaportes
+Content-Type: application/json
+
+{
+  "numero": "XX000000",
+  "paisEmissor": "Brasil",
+  "dataEmissao": "2030-01-01",
+  "dataValidade": "2020-01-01"
+}

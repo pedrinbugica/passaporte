@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -25,4 +26,7 @@ public class PessoaModel {
     @OneToOne
     @JoinColumn(name = "passaporte_id")
     private PassaporteModel passaporte;
+
+    @OneToMany(mappedBy = "pessoa")
+    private List<ViagemModel> viagens;
 }
