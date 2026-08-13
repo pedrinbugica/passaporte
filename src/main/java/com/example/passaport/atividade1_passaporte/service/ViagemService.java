@@ -2,12 +2,15 @@ package com.example.passaport.atividade1_passaporte.service;
 
 import com.example.passaport.atividade1_passaporte.Model.PessoaModel;
 import com.example.passaport.atividade1_passaporte.Model.ViagemModel;
+import com.example.passaport.atividade1_passaporte.dto.ViagemRequestDTO;
+import com.example.passaport.atividade1_passaporte.dto.ViagemResponseDTO;
 import com.example.passaport.atividade1_passaporte.repository.IPessoaRepository;
 import com.example.passaport.atividade1_passaporte.repository.IViagemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,44 +23,81 @@ public class ViagemService {
     @Autowired
     private IPessoaRepository IpessoaRepository;
 
-    public ViagemModel salvar(ViagemModel viagem) {
+    private ViagemResponseDTO toResponseDTO(ViagemModel model) {
+        ViagemResponseDTO dto = new ViagemResponseDTO();
+        dto.setId(model.getId());
+        dto.setDestino(model.getDestino());
+        dto.setDataSaida(model.getDataSaida());
+        dto.setDataRetorno(model.getDataRetorno());
 
-        if (viagem.getDataRetorno() != null && viagem.getDataRetorno().isBefore(viagem.getDataSaida())) {
+        if (model.getPessoa() != null) {
+            dto.setPessoaId(model.getPessoa().getId());
+            dto.setPessoaNome(model.getPessoa().getNome());
+        }
+        return dto;
+    }
+
+
+    public ViagemResponseDTO salvar(ViagemRequestDTO dto) {
+
+        if (dto.getDataRetorno() != null && dto.getDataRetorno().isBefore(dto.getDataSaida())) {
             throw new RuntimeException("Data de retono nao pode ser anterior a data de saida");
         }
 
-        UUID pessoaid = viagem.getPessoa().getId();
+        UUID pessoaid = dto.getPessoaId();
 
         Optional<PessoaModel> pessoa = IpessoaRepository.findById(pessoaid);
         if (pessoa.isEmpty()) {
             throw new RuntimeException("Pessoa nao encontrada");
         }
-        return IviagemRepository.save(viagem);
+
+        ViagemModel viagem = new ViagemModel();
+        viagem.setDestino(dto.getDestino());
+        viagem.setDataSaida(dto.getDataSaida());
+        viagem.setDataRetorno(dto.getDataRetorno());
+        viagem.setPessoa(pessoa.get());
+
+        ViagemModel viagemsalvo = IviagemRepository.save(viagem);
+
+        return toResponseDTO(viagemsalvo);
     }
 
-    public List<ViagemModel> listartodos() {
-        return IviagemRepository.findAll();
+        public List<ViagemResponseDTO> listartodos() {
+            List<ViagemModel> viagens = IviagemRepository.findAll();
+            List<ViagemResponseDTO> listVazia = new ArrayList<>();
+
+            for (ViagemModel viagem : viagens) {
+
+                ViagemResponseDTO dto = toResponseDTO(viagem);
+                listVazia.add(dto);
+            }
+            return listVazia;
     }
 
-    public ViagemModel buscarPorId(UUID id) {
-        return IviagemRepository.findById(id).orElseThrow(() -> new RuntimeException("Viagem nao encontrada"));
+    public ViagemResponseDTO buscarPorId(UUID id) {
+        ViagemModel viagem = IviagemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Viagem nao encontrada"));
+        return toResponseDTO(viagem);
     }
 
-    public ViagemModel atualizar(UUID id, ViagemModel viagemAtualizada) {
+    public ViagemResponseDTO atualizar(UUID id, ViagemRequestDTO dto) {
 
         ViagemModel viagem = IviagemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Viagem nao encontrada"));
 
-        if (viagemAtualizada.getDestino() != null) {
-            viagem.setDestino(viagemAtualizada.getDestino());
+        if (dto.getDestino() != null) {
+            viagem.setDestino(dto.getDestino());
         }
-        if (viagemAtualizada.getDataSaida() != null) {
-            viagem.setDataSaida(viagemAtualizada.getDataSaida());
+        if (dto.getDataSaida() != null) {
+            viagem.setDataSaida(dto.getDataSaida());
         }
-        if (viagemAtualizada.getDataRetorno() != null) {
-            viagem.setDataRetorno(viagemAtualizada.getDataRetorno());
+        if (dto.getDataRetorno() != null) {
+            viagem.setDataRetorno(dto.getDataRetorno());
         }
-        return IviagemRepository.save(viagem);
+
+        ViagemModel viagemSalva = IviagemRepository.save(viagem);
+
+        return toResponseDTO(viagemSalva);
     }
 
     public void deletar(UUID id) {
@@ -65,4 +105,5 @@ public class ViagemService {
         IviagemRepository.deleteById(id);
     }
     public String destinoMaisVisitado() {return IviagemRepository.destinoMaisVisitado();}
+
 }

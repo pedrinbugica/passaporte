@@ -1,6 +1,8 @@
 package com.example.passaport.atividade1_passaporte.controller;
 
 import com.example.passaport.atividade1_passaporte.Model.ViagemModel;
+import com.example.passaport.atividade1_passaporte.dto.ViagemRequestDTO;
+import com.example.passaport.atividade1_passaporte.dto.ViagemResponseDTO;
 import com.example.passaport.atividade1_passaporte.service.ViagemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,16 +20,16 @@ public class ViagemController {
     ViagemService viagemService;
 
     @PostMapping
-    public ResponseEntity<ViagemModel> salvar(@RequestBody ViagemModel viagemModel) {
+    public ResponseEntity<ViagemResponseDTO> salvar(@RequestBody ViagemRequestDTO viagemModel) {
 
-        ViagemModel viagemSalva = viagemService.salvar(viagemModel);
+        ViagemResponseDTO viagemSalva = viagemService.salvar(viagemModel);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(viagemSalva);
     }
 
     @GetMapping
-    public ResponseEntity<List<ViagemModel>> listarTodos() {
-        List<ViagemModel> listaViagem = viagemService.listartodos();
+    public ResponseEntity<List<ViagemResponseDTO>> listarTodos() {
+        List<ViagemResponseDTO> listaViagem = viagemService.listartodos();
 
         return ResponseEntity.status(HttpStatus.OK).body(listaViagem);
     }
@@ -38,17 +40,17 @@ public class ViagemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ViagemModel> buscarPorId(@PathVariable UUID id) {
+    public ResponseEntity<ViagemResponseDTO> buscarPorId(@PathVariable UUID id) {
 
-        ViagemModel viagemId = viagemService.buscarPorId(id);
+        ViagemResponseDTO viagemId = viagemService.buscarPorId(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(viagemId);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ViagemModel> atualizar(@PathVariable UUID id, @RequestBody ViagemModel viagemAtualizada){
+    public ResponseEntity<ViagemResponseDTO> atualizar(@PathVariable UUID id, @RequestBody ViagemRequestDTO viagemAtualizada){
 
-        ViagemModel viagemAtualizada_ = viagemService.atualizar(id,viagemAtualizada);
+        ViagemResponseDTO viagemAtualizada_ = viagemService.atualizar(id,viagemAtualizada);
 
         return ResponseEntity.status(HttpStatus.OK).body(viagemAtualizada_);
     }
